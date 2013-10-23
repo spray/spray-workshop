@@ -9,7 +9,7 @@ class UserService(userId: UserId) extends Actor {
 
   def receive = {
     case PostMessage(message) if message.user == userId =>
-      timeline :+= message
+      timeline +:= message
 
     case GetTimeline(`userId`) => sender ! Timeline(timeline)
   }
