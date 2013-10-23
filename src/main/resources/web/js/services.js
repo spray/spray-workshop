@@ -1,5 +1,5 @@
 'use strict';
 
-angular.module('sprayWorkshop', ['ngResource']).factory('Fruits', function($resource) {
+angular.module('workshopServices', ['ngResource']).factory('Fruits', function($resource) {
     return $resource('api/fruits');
 });

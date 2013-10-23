@@ -1,6 +1,6 @@
 'use strict';
 
-function GabblerCtrl($scope, Fruits) {
+function WorkshopCtrl($scope, Fruits) {
 
     $scope.fruits = [];
 

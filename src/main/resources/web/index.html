@@ -27,11 +27,12 @@
 </div>
 
 <div class="container">
+
   <div class="row">
 
       <!--### The list of messages ###-->
       <div class="span6">
-          <h3 data-ng-init="getFruits()">My fruits</h3>
+          <h3 data-ng-init="getFruits()"></h3>
           <div data-ng-repeat="fruit in fruits">
               <div class="span2">{{ fruit.name }}</div>
           </div>
@@ -46,9 +47,9 @@
 <script src="js/lib/angular.js"></script>
 <script src="js/lib/angular-resource.js"></script>
 
-<script src="js/lib/controllers.js"></script>
-<script src="js/lib/services.js"></script>
-<script src="js/lib/app.js"></script>
+<script src="js/controllers.js"></script>
+<script src="js/services.js"></script>
+<script src="js/app.js"></script>
 
 </body>
 </html>
