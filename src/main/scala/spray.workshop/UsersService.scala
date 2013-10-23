@@ -20,8 +20,8 @@ class UsersService extends Actor {
 
     case GetUsers => sender ! Users(allUsers)
 
-    case AuthenticateUser(userPass) =>
-      val response = allUsers.find(_.id == userPass.user)
+    case FindUser(user) =>
+      val response = allUsers.find(_.id == user)
 
       sender ! response
   }
@@ -34,5 +34,5 @@ object UsersService {
   case class CreateUser(id: String)
   case class UserCreated(userId: UserId)
 
-  case class AuthenticateUser(userPass: UserPass)
+  case class FindUser(id: String)
 }

@@ -13,10 +13,18 @@ import spray.http.Uri
 class FrontendActor extends Actor with FrontendService {
   implicit def actorRefFactory = context
   implicit def executionContext: ExecutionContext = context.dispatcher
+  implicit def timeout: Timeout = Timeout(2.seconds)
 
   val usersService: ActorRef = context.actorOf(Props(classOf[UsersService]))
-  usersService ! UsersService.CreateUser("alan")
-  usersService ! UsersService.CreateUser("ada")
+
+  {
+    val alan = (usersService ? UsersService.CreateUser("alan")).mapTo[UsersService.UserCreated]
+    val ada = (usersService ? UsersService.CreateUser("ada")).mapTo[UsersService.UserCreated]
+
+    alan.foreach { al =>
+      al.userId.ref ! UserService.PostMessage(al.userId.newMessage("I'm alive"))
+    }
+  }
 
   def receive = runRoute(route ~ staticRoute)
 
@@ -40,10 +48,9 @@ trait FrontendService extends HttpService with UserJsonProtocol with TestJs {
   import spray.httpx.SprayJsonSupport._
 
   implicit def executionContext: ExecutionContext
+  implicit def timeout: Timeout
 
   def usersService: ActorRef
-
-  implicit val timeout = Timeout(2.seconds)
 
   // format: OFF
   def route =
@@ -59,6 +66,15 @@ trait FrontendService extends HttpService with UserJsonProtocol with TestJs {
           complete(
             (usersService ? UsersService.GetUsers) map {
               case UsersService.Users(users) => users
+            }
+          )
+        )
+      ) ~
+      path("user" / Segment)( user =>
+        get(
+          complete(
+            findUser(user).map(_.get).flatMap { user =>
+              (user.ref ? UserService.GetTimeline(user)).mapTo[Timeline]
             }
           )
         )
@@ -83,9 +99,12 @@ trait FrontendService extends HttpService with UserJsonProtocol with TestJs {
   def apiUriFor(user: UserId): Uri = Uri("/api/user/" + user.id)
   def htmlUriFor(user: UserId): Uri = Uri("/" + user.id)
 
+  def findUser(id: String): Future[Option[UserId]] =
+    (usersService ? UsersService.FindUser(id)).mapTo[Option[UserId]]
+
   def authenticateUser(user: Option[UserPass]): Future[Option[UserId]] =
     user match {
-      case Some(user) => (usersService ? UsersService.AuthenticateUser(user)).mapTo[Option[UserId]]
+      case Some(user) => findUser(user.user)
       case None       => Future.successful(None)
     }
 }

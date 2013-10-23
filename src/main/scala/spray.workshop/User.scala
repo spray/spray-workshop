@@ -8,10 +8,20 @@ trait UserId {
   def id: String
   //def displayName: String
   def ref: ActorRef
+
+  override def hashCode(): Int = id.hashCode
+  override def equals(obj: scala.Any): Boolean = obj match {
+    case i: UserId => i.id == id
+    case _         => false
+  }
+
+  override def toString: String = s"<User:$id>"
+
+  def newMessage(msg: String): Message = Message(this, DateTime.now, msg)
 }
 case class UserRef(id: String, apiUri: Option[Uri], htmlUri: Option[Uri])
 
-case class Message(user: UserId, time: DateTime, message: Message)
+case class Message(user: UserId, time: DateTime, message: String)
 case class Timeline(messages: Seq[Message])
 
 trait UserJsonProtocol {
