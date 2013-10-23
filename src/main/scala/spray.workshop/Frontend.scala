@@ -17,7 +17,10 @@ class FrontendActor extends Actor with FrontendService {
   usersService ! UsersService.CreateUser("alan")
   usersService ! UsersService.CreateUser("ada")
 
-  def receive = runRoute(route)
+  def receive = runRoute(route ~ staticRoute)
+
+  def staticRoute =
+    path("index.html")(getFromResource("web/index.html")) ~ getFromResourceDirectory("web")
 }
 
 trait FrontendService extends HttpService with UserJsonProtocol {
