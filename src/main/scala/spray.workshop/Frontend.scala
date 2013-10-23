@@ -55,11 +55,13 @@ trait FrontendService extends HttpService with UserJsonProtocol with TestJs {
     ) ~
     pathPrefix("api")(
       path("users")(
-        complete {
-          (usersService ? UsersService.GetUsers) map {
-            case UsersService.Users(users) => users
-          }
-        }
+        get(
+          complete(
+            (usersService ? UsersService.GetUsers) map {
+              case UsersService.Users(users) => users
+            }
+          )
+        )
       ) ~
         path("fruits") (
           get {
