@@ -34,7 +34,7 @@ trait Service extends HttpService {
     )
 
   def staticRoute =
-    getFromResourceDirectory("web")
+    path("index.html")(getFromResource("web/index.html")) ~ getFromResourceDirectory("web")
 
   // format: ON
 }
