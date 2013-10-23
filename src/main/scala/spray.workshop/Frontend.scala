@@ -23,6 +23,7 @@ class FrontendActor extends Actor with FrontendService {
 
     alan.foreach { al =>
       al.userId.ref ! UserService.PostMessage(al.userId.newMessage("I'm alive"))
+      al.userId.ref ! UserService.PostMessage(al.userId.newMessage("evila m'I"))
     }
   }
 
