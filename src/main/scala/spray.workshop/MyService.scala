@@ -17,6 +17,10 @@ class MyService extends Actor with Service {
 trait Service extends HttpService {
   implicit def executionContext: ExecutionContext
 
+  case class Fruit(name: String)
+
+  val fruits = Fruit("apple") :: Fruit("orange") :: Fruit("banana") :: Nil
+
   // format: OFF
   def route =
     // public
@@ -30,6 +34,11 @@ trait Service extends HttpService {
         path("")(
           complete(s"Hello ${user.username}")
         )
+      )
+    ) ~
+    path("api" / "fruits") (
+      get (
+        complete("")
       )
     )
 
