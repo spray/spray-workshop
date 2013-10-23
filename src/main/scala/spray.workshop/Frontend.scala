@@ -2,8 +2,8 @@ package spray.workshop
 
 import akka.actor._
 import spray.routing._
-import spray.routing.authentication.BasicAuth
-import scala.concurrent.ExecutionContext
+import spray.routing.authentication.{ UserPass, BasicAuth }
+import scala.concurrent.{ Future, ExecutionContext }
 import akka.pattern.ask
 import akka.util.Timeout
 import scala.concurrent.duration._
@@ -71,9 +71,9 @@ trait FrontendService extends HttpService with UserJsonProtocol with TestJs {
         )
     ) ~
     pathPrefix("home")(
-      authenticate(BasicAuth(UsernameEqualsPasswordAuthenticator, "spray-workshop"))(user =>
+      authenticate(BasicAuth(authenticateUser _, "spray-workshop"))(user =>
         path("")(
-          complete(s"Hello ${user.username}")
+          complete(s"Hello ${user.id}")
         )
       )
     )
@@ -82,5 +82,11 @@ trait FrontendService extends HttpService with UserJsonProtocol with TestJs {
   def resolveUserId(id: String): UserId = ???
   def apiUriFor(user: UserId): Uri = Uri("/api/user/" + user.id)
   def htmlUriFor(user: UserId): Uri = Uri("/" + user.id)
+
+  def authenticateUser(user: Option[UserPass]): Future[Option[UserId]] =
+    user match {
+      case Some(user) => (usersService ? UsersService.AuthenticateUser(user)).mapTo[Option[UserId]]
+      case None       => Future.successful(None)
+    }
 }
 
