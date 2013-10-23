@@ -8,6 +8,7 @@ import akka.pattern.ask
 import akka.util.Timeout
 import scala.concurrent.duration._
 import spray.json.DefaultJsonProtocol
+import spray.http.Uri
 
 class FrontendActor extends Actor with FrontendService {
   implicit def actorRefFactory = context
@@ -59,4 +60,6 @@ trait FrontendService extends HttpService with UserJsonProtocol {
     )
   // format: ON
   def resolveUserId(id: String): UserId = ???
+  def apiUriFor(user: UserId): Uri = Uri("/api/user/" + user.id)
+  def htmlUriFor(user: UserId): Uri = Uri("/" + user.id)
 }
