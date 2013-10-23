@@ -5,15 +5,20 @@ import spray.routing._
 import spray.http.StatusCodes
 import spray.routing.authentication.BasicAuth
 import spray.workshop.UsernameEqualsPasswordAuthenticator
+import scala.concurrent.ExecutionContext
 
-class MyService extends Actor with HttpService {
+class MyService extends Actor with Service {
   implicit def actorRefFactory = context
-  import context.dispatcher
+  implicit def executionContext: ExecutionContext = context.dispatcher
 
-  def receive = runRoute(myRoute)
+  def receive = runRoute(route)
+}
+
+trait Service extends HttpService {
+  implicit def executionContext: ExecutionContext
 
   // format: OFF
-  def myRoute =
+  def route =
     // public
     path("")(
       get (
