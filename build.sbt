@@ -7,7 +7,8 @@ scalaVersion  := "2.10.3"
 scalacOptions := Seq("-unchecked", "-deprecation", "-encoding", "utf8")
 
 resolvers ++= Seq(
-  "spray repo" at "http://repo.spray.io/"
+  "spray repo" at "http://repo.spray.io/",
+  "sonatype releases" at "https://oss.sonatype.org/content/repositories/releases/"
 )
 
 libraryDependencies ++= {
