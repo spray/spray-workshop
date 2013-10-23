@@ -1,4 +1,4 @@
-package com.example
+package spray.workshop
 
 import akka.actor._
 import spray.routing._
