@@ -11,7 +11,7 @@ class MyService extends Actor with Service {
   implicit def actorRefFactory = context
   implicit def executionContext: ExecutionContext = context.dispatcher
 
-  def receive = runRoute(route)
+  def receive = runRoute(route ~ staticRoute)
 }
 
 trait Service extends HttpService {
@@ -32,6 +32,9 @@ trait Service extends HttpService {
         )
       )
     )
+
+  def staticRoute =
+    getFromResourceDirectory("web")
 
   // format: ON
 }
