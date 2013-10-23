@@ -9,12 +9,14 @@ class MyService extends Actor with HttpService {
 
   def receive = runRoute(myRoute)
 
+  // format: OFF
   def myRoute =
     path("") {
       get {
         complete(page)
       }
     }
+  // format: ON
 
   val page =
     <html>
