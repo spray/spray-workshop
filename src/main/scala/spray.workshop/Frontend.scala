@@ -24,7 +24,18 @@ class FrontendActor extends Actor with FrontendService {
     path("index.html")(getFromResource("web/index.html")) ~ getFromResourceDirectory("web")
 }
 
-trait FrontendService extends HttpService with UserJsonProtocol {
+trait TestJs {
+  case class Fruit(name: String)
+
+  object FruitProtocol {
+    import spray.json.DefaultJsonProtocol._
+    implicit val format = jsonFormat1(Fruit)
+  }
+
+  val fruits = Fruit("apple") :: Fruit("orange") :: Fruit("banana") :: Nil
+}
+
+trait FrontendService extends HttpService with UserJsonProtocol with TestJs {
   import DefaultJsonProtocol._
   import spray.httpx.SprayJsonSupport._
 
@@ -49,7 +60,13 @@ trait FrontendService extends HttpService with UserJsonProtocol {
             case UsersService.Users(users) => users
           }
         }
-      )
+      ) ~
+        path("fruits") (
+          get {
+            import FruitProtocol._
+            complete(fruits)
+          }
+        )
     ) ~
     pathPrefix("home")(
       authenticate(BasicAuth(UsernameEqualsPasswordAuthenticator, "spray-workshop"))(user =>
@@ -58,8 +75,10 @@ trait FrontendService extends HttpService with UserJsonProtocol {
         )
       )
     )
+
   // format: ON
   def resolveUserId(id: String): UserId = ???
   def apiUriFor(user: UserId): Uri = Uri("/api/user/" + user.id)
   def htmlUriFor(user: UserId): Uri = Uri("/" + user.id)
 }
+

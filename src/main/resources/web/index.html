@@ -6,6 +6,7 @@
   <title>spray workshop working title</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/png" href="img/favicon.ico">
+  <link rel="stylesheet" href="css/app.css">
   <link rel="stylesheet" href="css/bootstrap.css">
   <link rel="stylesheet" href="css/bootstrap-responsive.css">
 </head>
@@ -27,8 +28,16 @@
 </div>
 
 <div class="container">
+
   <div class="row">
 
+      <!--### The list of messages ###-->
+      <div class="span6">
+          <h3 data-ng-init="getFruits()"></h3>
+          <div data-ng-repeat="fruit in fruits">
+              <div class="span2">{{ fruit.name }}</div>
+          </div>
+      </div>
 
 
   </div>
@@ -39,6 +48,9 @@
 <script src="js/lib/angular.js"></script>
 <script src="js/lib/angular-resource.js"></script>
 
+<script src="js/controllers.js"></script>
+<script src="js/services.js"></script>
+<script src="js/app.js"></script>
 
 </body>
 </html>
