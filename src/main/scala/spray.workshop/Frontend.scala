@@ -8,7 +8,7 @@ import akka.pattern.ask
 import akka.util.Timeout
 import scala.concurrent.duration._
 import spray.json.DefaultJsonProtocol
-import spray.http.Uri
+import spray.http.{ StatusCodes, Uri }
 
 class FrontendActor extends Actor with FrontendService {
   implicit def actorRefFactory = context
@@ -51,6 +51,9 @@ trait FrontendService extends HttpService with UserJsonProtocol with TestJs {
   implicit def executionContext: ExecutionContext
   implicit def timeout: Timeout
 
+  def pathEnd = rawPathPrefix(Slash.? ~ PathEnd)
+  override def path[L <: shapeless.HList](pm: PathMatcher[L]): Directive[L] = rawPathPrefix((Slash?) ~ pm ~ (Slash?) ~ PathEnd)
+
   def usersService: ActorRef
 
   // format: OFF
@@ -74,7 +77,7 @@ trait FrontendService extends HttpService with UserJsonProtocol with TestJs {
       path("user" / Segment)( user =>
         get(
           complete(
-            findUser(user).map(_.get).flatMap { user =>
+            findUser(user).flatMap { user =>
               (user.ref ? UserService.GetTimeline(user)).mapTo[Timeline]
             }
           )
@@ -89,8 +92,16 @@ trait FrontendService extends HttpService with UserJsonProtocol with TestJs {
     ) ~
     pathPrefix("home")(
       authenticate(BasicAuth(authenticateUser _, "spray-workshop"))(user =>
-        path("")(
-          complete(s"Hello ${user.id}")
+        post(
+          path("newMessage")(
+            entity(as[String]) { msg =>
+              val result = (user.ref ? UserService.PostMessage(user.newMessage(msg))).mapTo[UserService.NewMessagePosted]
+              complete(result.map(_ => "Successfully posted!").recover { case _ => "Couldn't be posted" } )
+            }
+          )
+        ) ~
+          path("")(
+            get(complete(s"Hello ${user.id}"))
         )
       )
     )
@@ -100,12 +111,12 @@ trait FrontendService extends HttpService with UserJsonProtocol with TestJs {
   def apiUriFor(user: UserId): Uri = Uri("/api/user/" + user.id)
   def htmlUriFor(user: UserId): Uri = Uri("/" + user.id)
 
-  def findUser(id: String): Future[Option[UserId]] =
-    (usersService ? UsersService.FindUser(id)).mapTo[Option[UserId]]
+  def findUser(id: String): Future[UserId] =
+    (usersService ? UsersService.FindUser(id)).mapTo[UserId]
 
   def authenticateUser(user: Option[UserPass]): Future[Option[UserId]] =
     user match {
-      case Some(user) => findUser(user.user)
+      case Some(user) => findUser(user.user).map(Some(_)).recover { case _ => None }
       case None       => Future.successful(None)
     }
 }

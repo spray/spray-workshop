@@ -2,6 +2,7 @@ package spray.workshop
 
 import akka.actor._
 import spray.routing.authentication.UserPass
+import scala.util.Failure
 
 class UsersService extends Actor {
   import UsersService._
@@ -21,7 +22,10 @@ class UsersService extends Actor {
     case GetUsers => sender ! Users(allUsers)
 
     case FindUser(user) =>
-      val response = allUsers.find(_.id == user)
+      val response = allUsers.find(_.id == user) match {
+        case Some(id) => id
+        case None     => Failure(new RuntimeException(s"User '$user' not found"))
+      }
 
       sender ! response
   }
