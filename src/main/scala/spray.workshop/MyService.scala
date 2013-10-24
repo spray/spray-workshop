@@ -15,8 +15,16 @@ trait MyService extends HttpService {
   def myRoute =
     get {
       path("") {
-        complete("Hello world!")
+        complete(index)
       }
-    }
+    } ~ getFromResourceDirectory("web")
   // format: ON
+
+  def index =
+    <html>
+      <body>
+        <div>Hello World</div>
+        <a href="http://xkcd.com/927/"><img src="standards.png"></img></a>
+      </body>
+    </html>
 }
