@@ -1,4 +1,4 @@
-Step 2:
+Step 2a:
 
  * Let's add some routing. These routes should be valid:
    * `/` -> index page
