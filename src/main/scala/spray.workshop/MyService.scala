@@ -1,29 +1,22 @@
-package com.example
+package spray.workshop
 
 import akka.actor._
 import spray.routing._
 import spray.http.StatusCodes
 
-class MyService extends Actor with HttpService {
+class MyServiceActor extends Actor with MyService {
   implicit def actorRefFactory = context
 
   def receive = runRoute(myRoute)
+}
 
+trait MyService extends HttpService {
   // format: OFF
   def myRoute =
-    path("") {
-      get {
-        complete(page)
+    get {
+      path("") {
+        complete("Hello world!")
       }
     }
   // format: ON
-
-  val page =
-    <html>
-      <head>
-      </head>
-      <body>
-        Test
-      </body>
-    </html>
 }
