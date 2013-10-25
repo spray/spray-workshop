@@ -2,7 +2,6 @@ package spray.workshop
 
 import akka.actor._
 import spray.routing._
-import spray.http.StatusCodes
 
 class MyServiceActor extends Actor with MyService {
   implicit def actorRefFactory = context
