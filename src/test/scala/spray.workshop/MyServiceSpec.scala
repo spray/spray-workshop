@@ -22,7 +22,7 @@ class MyServiceSpec extends Specification with Specs2RouteTest with MyService {
       Get("/add/10/1024") ~> myRoute ~> check {
         responseAs[String] === "1034"
       }
-      Get("/add?a=12&b=11") ~> myRoute ~> check {
+      Post("/add").withEntity(HttpEntity(MediaTypes.`application/x-www-form-urlencoded`, "a=12&b=11")) ~> myRoute ~> check {
         responseAs[String] === "23"
       }
     }
