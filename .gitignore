@@ -6,3 +6,8 @@ lib_managed/
 src_managed/
 test-output/
 *.iml
+
+.cache
+.classpath
+.project
+/.settings/
