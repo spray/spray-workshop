@@ -30,6 +30,13 @@ trait MyService extends HttpService {
       path("add" / IntNumber / IntNumber)( (a, b) =>
         complete((a + b).toString)
       )
+    )~
+    post(
+      path("add") (
+        formFields('a.as[Int], 'b.as[Int])((a, b) =>
+          complete((a + b).toString)
+        )
+      )
     ) ~ getFromResourceDirectory("web")
   // format: ON
 
@@ -38,6 +45,12 @@ trait MyService extends HttpService {
       <body>
         <div>Hello World</div>
         <a href="http://xkcd.com/927/"><img src="standards.png"></img></a>
+        <h2>Calculator</h2>
+        <form action="/add">
+          <div>a: <input type="text" name="a"></input></div>
+          <div>b: <input type="text" name="b"></input></div>
+          <div><input type="submit" value="add"></input></div>
+        </form>
       </body>
     </html>
 

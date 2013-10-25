@@ -9,19 +9,6 @@ class MyServiceSpec extends Specification with Specs2RouteTest with MyService {
   def actorRefFactory = system
 
   "MyService" should {
-    "return a greeting for GET requests to the root path" in {
-      Get() ~> myRoute ~> check {
-        responseAs[NodeSeq] ===
-  // format: OFF
-    <html>
-      <body>
-        <div>Hello World</div>
-        <a href="http://xkcd.com/927/"><img src="standards.png"></img></a>
-      </body>
-    </html>
-        // format: ON
-      }
-    }
     "greet particular user" in {
       Get("/users/john/greet") ~> myRoute ~> check {
         responseAs[String] === "Hello john"
@@ -34,6 +21,9 @@ class MyServiceSpec extends Specification with Specs2RouteTest with MyService {
 
       Get("/add/10/1024") ~> myRoute ~> check {
         responseAs[String] === "1034"
+      }
+      Post("/add").withEntity(HttpEntity(MediaTypes.`application/x-www-form-urlencoded`, "a=12&b=11")) ~> myRoute ~> check {
+        responseAs[String] === "23"
       }
     }
 
