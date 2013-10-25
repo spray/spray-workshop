@@ -29,12 +29,14 @@ trait MyService extends HttpService {
       ) ~
       path("add" / IntNumber / IntNumber)( (a, b) =>
         complete((a + b).toString)
-      ) ~
-      path("add") {
-        parameters('a.as[Int], 'b.as[Int]) { (a, b) =>
+      )
+    )~
+    post(
+      path("add") (
+        formFields('a.as[Int], 'b.as[Int])((a, b) =>
           complete((a + b).toString)
-        }
-      }
+        )
+      )
     ) ~ getFromResourceDirectory("web")
   // format: ON
 
