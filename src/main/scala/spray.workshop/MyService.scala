@@ -11,6 +11,13 @@ class MyServiceActor extends Actor with MyService {
 }
 
 trait MyService extends HttpService {
+  case class CalculatedSum(a: Int, b: Int, sum: Int)
+  object CalculatedSum {
+    import spray.json.DefaultJsonProtocol._
+    implicit val sumJsonFormat = jsonFormat3(CalculatedSum.apply _)
+  }
+  import spray.httpx.SprayJsonSupport._
+
   // format: OFF
   def myRoute =
     get(
@@ -34,7 +41,7 @@ trait MyService extends HttpService {
     post(
       path("add") (
         formFields('a.as[Int], 'b.as[Int])((a, b) =>
-          complete((a + b).toString)
+          complete(CalculatedSum(a, b, a + b))
         )
       )
     ) ~ getFromResourceDirectory("web")
